@@ -35,10 +35,8 @@ exports.syncUserToSupabase = async (doc) => {
       // We'll use a placeholder or the MongoDB ID as auth_id if needed, 
       // but the migration requires a UUID.
       if (!doc.supabaseId && !syncData.auth_id) {
-        // For new records, we might need to handle auth_id creation if RLS requires it.
-        // For now, we'll let Supabase generate the ID if not provided.
-        // In a real scenario, you'd create a Supabase Auth user first.
-        syncData.auth_id = new mongoose.Types.ObjectId().toString(); // Placeholder UUID-like string or actual UUID
+        // Generate a UUID-like string if not provided (for RLS/Auth linking)
+        syncData.auth_id = doc._id.toString(); // Use Mongo ID as a reliable seed for auth_id
       }
     } else {
       syncData = {

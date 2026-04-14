@@ -12,12 +12,12 @@ const ParentSchema = new mongoose.Schema({
     required: true, 
     unique: true 
   },
-  password: { 
+  passwordHash: { 
     type: String, 
     required: true 
   },
   // The 8-digit key for recovery/deletion
-  recoveryKey: { 
+  recoveryKeyHash: { 
     type: String, 
     required: true 
   },
@@ -44,25 +44,36 @@ const ParentSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// LOGIC: Auto-generate handle if missing & Hash the Recovery Key
+// LOGIC: Auto-generate handle if missing & Hash both Password and Recovery Key
 ParentSchema.pre('save', async function(next) {
   // 1. Generate Handle if empty
   if (!this.handle) {
     this.handle = `Parent_${crypto.randomBytes(3).toString('hex')}`;
   }
 
-  // 2. Hash the 8-digit recoveryKey (treat it like a second password)
-  if (this.isModified('recoveryKey')) {
+  // 2. Hash the password if new or modified
+  if (this.isModified('passwordHash')) {
     const salt = await bcrypt.genSalt(10);
-    this.recoveryKey = await bcrypt.hash(this.recoveryKey, salt);
+    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+  }
+
+  // 3. Hash the 8-digit recoveryKeyHash (treat it like a second password)
+  if (this.isModified('recoveryKeyHash')) {
+    const salt = await bcrypt.genSalt(10);
+    this.recoveryKeyHash = await bcrypt.hash(this.recoveryKeyHash, salt);
   }
 
   next();
 });
 
+// Method to verify login password
+ParentSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.passwordHash);
+};
+
 // Method to verify 8-digit key
 ParentSchema.methods.matchRecoveryKey = async function(enteredKey) {
-  return await bcrypt.compare(enteredKey, this.recoveryKey);
+  return await bcrypt.compare(enteredKey, this.recoveryKeyHash);
 };
 
 module.exports = mongoose.model('Parent', ParentSchema);

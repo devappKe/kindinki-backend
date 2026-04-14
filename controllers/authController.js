@@ -37,9 +37,9 @@ exports.registerParent = async (req, res) => {
     // 4. Create Parent Record (Matches the separate Parent model)
     const newParent = await Parent.create({
       handle: finalHandle,
-      email: email, // Added email field
-      password: password,
-      recoveryKey: finalRecoveryKey,
+      email: email, 
+      passwordHash: password,
+      recoveryKeyHash: finalRecoveryKey,
       inviteCodeUsed: inviteCode,
       meritScore: 5
     });
@@ -140,10 +140,8 @@ exports.loginUser = async (req, res) => {
         return res.status(401).json({ error: "Invalid handle or password" });
     }
 
-    // Check password (Parent model uses 'password', User uses 'passwordHash')
-    const isMatch = user.passwordHash
-        ? await user.matchPassword(password)
-        : await require('bcryptjs').compare(password, user.password);
+    // Check password (Standardized naming)
+    const isMatch = await user.matchPassword(password);
 
     if (isMatch) {
       const token = jwt.sign(

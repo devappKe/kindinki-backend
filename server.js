@@ -28,7 +28,12 @@ connectDB();
 
 // 3. Global Middleware
 app.use(helmet()); 
-app.use(cors()); 
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://kindinki-frontend.onrender.com' 
+    : 'http://localhost:5173',
+  credentials: true
+})); 
 app.use(express.json({ limit: '10kb' })); 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); 
@@ -43,7 +48,8 @@ const securityLimiter = rateLimit({
     message: "Too many attempts. Security lock active for 15 minutes." 
   }
 });
-// Apply limiter to recovery AND sensitive account actions
+// Apply limiter to auth AND recovery AND sensitive account actions
+app.use('/api/auth', securityLimiter);
 app.use('/api/recovery', securityLimiter);
 
 // 5. Define Routes
