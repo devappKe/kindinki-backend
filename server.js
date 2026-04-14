@@ -1,5 +1,11 @@
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+const fs = require('fs');
+
+// Load environment variables from .env file if it exists (useful for local development)
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+}
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -9,7 +15,8 @@ const connectDB = require('./config/db');
 
 // 1. Pre-flight Check
 if (!process.env.MONGO_URI) {
-  console.error('❌ FATAL ERROR: MONGO_URI is not defined in .env file.');
+  console.error('❌ FATAL ERROR: MONGO_URI is not defined in process environment or .env file.');
+  console.error('Please ensure MONGO_URI is set in your Render dashboard environment variables.');
   process.exit(1);
 }
 

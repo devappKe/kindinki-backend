@@ -25,6 +25,7 @@ const connectDB = async () => {
     -------------------------------------------------------`);
   } catch (error) {
     console.error(`❌ KINDINKI Connection Error: ${error.message}`);
+    console.error('Check if your IP address is whitelisted in MongoDB Atlas and if MONGO_URI is correct in the Render dashboard.');
     // Exit if the database fails so the server doesn't run "blind"
     process.exit(1);
   }
