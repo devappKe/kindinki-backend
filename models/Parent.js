@@ -28,8 +28,7 @@ const ParentSchema = new mongoose.Schema({
     max: 5 
   },
   inviteCodeUsed: { 
-    type: String, 
-    required: true 
+    type: String
   },
   // Supabase Sync Fields
   supabaseId: {
