@@ -4,6 +4,18 @@ const User = require('../models/User');
 const MeritLog = require('../models/MeritLog');
 const StorageLedger = require('../models/StorageLedger');
 const Payment = require('../models/Payment');
+const mongoose = require('mongoose');
+
+const buildIdQuery = (id) => {
+  const query = [
+    { handle: id },
+    { supabaseId: id }
+  ];
+  if (mongoose.Types.ObjectId.isValid(id)) {
+    query.push({ _id: id });
+  }
+  return { $or: query };
+};
 
 /**
  * Parental Controller
@@ -19,13 +31,7 @@ exports.getLinkedChildren = async (req, res) => {
   try {
     const { parentId } = req.params;
     
-    const parent = await Parent.findOne({
-      $or: [
-        { _id: parentId },
-        { handle: parentId },
-        { supabaseId: parentId }
-      ]
-    });
+    const parent = await Parent.findOne(buildIdQuery(parentId));
     
     if (!parent) {
       return res.status(404).json({
@@ -101,13 +107,7 @@ exports.getChildOverview = async (req, res) => {
   try {
     const { childId } = req.params;
     
-    const child = await User.findOne({
-      $or: [
-        { _id: childId },
-        { handle: childId },
-        { supabaseId: childId }
-      ]
-    }).select('-passwordHash -recoveryKeyHash').lean();
+    const child = await User.findOne(buildIdQuery(childId)).select('-passwordHash -recoveryKeyHash').lean();
     
     if (!child) {
       return res.status(404).json({
@@ -186,13 +186,7 @@ exports.logParentalAction = async (req, res) => {
   try {
     const { parentId, action, childId, details, severity } = req.body;
     
-    const parent = await Parent.findOne({
-      $or: [
-        { _id: parentId },
-        { handle: parentId },
-        { supabaseId: parentId }
-      ]
-    });
+    const parent = await Parent.findOne(buildIdQuery(parentId));
     
     if (!parent) {
       return res.status(404).json({
@@ -204,13 +198,7 @@ exports.logParentalAction = async (req, res) => {
     // Find child if provided
     let child = null;
     if (childId) {
-      child = await User.findOne({
-        $or: [
-          { _id: childId },
-          { handle: childId },
-          { supabaseId: childId }
-        ]
-      });
+      child = await User.findOne(buildIdQuery(childId));
     }
     
     const auditLog = await AuditLog.create({
@@ -255,13 +243,7 @@ exports.getAuditLogs = async (req, res) => {
     const { parentId } = req.params;
     const { limit = 100, page = 1, category, severity, requiresReview } = req.query;
     
-    const parent = await Parent.findOne({
-      $or: [
-        { _id: parentId },
-        { handle: parentId },
-        { supabaseId: parentId }
-      ]
-    });
+    const parent = await Parent.findOne(buildIdQuery(parentId));
     
     if (!parent) {
       return res.status(404).json({
@@ -328,13 +310,7 @@ exports.getAuditStats = async (req, res) => {
     const { parentId } = req.params;
     const { days = 30 } = req.query;
     
-    const parent = await Parent.findOne({
-      $or: [
-        { _id: parentId },
-        { handle: parentId },
-        { supabaseId: parentId }
-      ]
-    });
+    const parent = await Parent.findOne(buildIdQuery(parentId));
     
     if (!parent) {
       return res.status(404).json({

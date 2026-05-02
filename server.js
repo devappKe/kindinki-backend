@@ -99,10 +99,18 @@ app.use((req, res) => {
 
 // 7. Global Error Handling
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Internal Server Error';
+
+  // Handle Mongoose CastError (invalid ObjectId)
+  if (err.name === 'CastError') {
+    statusCode = 400;
+    message = `Invalid identifier format. We couldn't find a record matching that ID.`;
+  }
+
   res.status(statusCode).json({
     status: 'error',
-    message: err.message || 'Internal Server Error',
+    message: message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
 });
