@@ -74,6 +74,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  storageLimitGB: {
+    type: Number,
+    default: 1
+  },
   lastSyncedAt: {
     type: Date,
     default: Date.now

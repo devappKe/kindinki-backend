@@ -30,6 +30,10 @@ const ParentSchema = new mongoose.Schema({
     default: 5, // Everyone starts as an Angel
     min: 0
   },
+  storageLimitGB: {
+    type: Number,
+    default: 1
+  },
   inviteCodeUsed: { 
     type: String
   },

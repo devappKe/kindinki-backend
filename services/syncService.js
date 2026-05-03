@@ -22,6 +22,7 @@ exports.syncUserToSupabase = async (doc) => {
       syncData = {
         email: doc.email,
         parental_handle: doc.handle,
+        storage_limit_gb: doc.storageLimitGB || 1,
         updated_at: new Date()
       };
       
@@ -48,6 +49,7 @@ exports.syncUserToSupabase = async (doc) => {
         avatar_level: Math.min(Math.floor((doc.meritScore || 0) / 2), 3),
         has_angel_tier: doc.hasAngelTier || false,
         is_storage_sharing_enabled: doc.isStorageSharingEnabled || false,
+        storage_limit_gb: doc.storageLimitGB || 1,
         updated_at: new Date()
       };
       
