@@ -53,10 +53,10 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); 
 }
 
-// 4. Rate Limiting (Protects those 8-digit keys and recovery attempts) [cite: 2026-01-10]
+// 4. Rate Limiting (Protects those 8-digit keys and recovery attempts)
 const securityLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
-  max: 5, 
+  max: 100, // Increased to 100 to prevent shared-IP lockouts (e.g., family setup)
   message: { 
     status: 'error', 
     message: "Too many attempts. Security lock active for 15 minutes." 
