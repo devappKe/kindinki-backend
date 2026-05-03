@@ -3,6 +3,7 @@ const Parent = require('../models/Parent');
 const jwt = require('jsonwebtoken');
 const { checkInviteCode, markInviteCodeUsed } = require('./inviteController');
 const syncService = require('../services/syncService');
+const { friendlyError } = require('../utils/friendlyErrors');
 
 // --- REGISTRATION LOGIC ---
 exports.registerParent = async (req, res) => {
@@ -64,11 +65,10 @@ exports.registerParent = async (req, res) => {
       message: "Registration successful. Welcome, Angel!" 
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { status, message } = friendlyError(error);
+    res.status(status).json({ error: message });
   }
 };
-
-// --- CHILD REGISTRATION LOGIC ---
 exports.registerChild = async (req, res) => {
   try {
     const { inviteCode, username, email, password, ageGroup, eightDigitKey } = req.body;
@@ -120,7 +120,8 @@ exports.registerChild = async (req, res) => {
       message: "Child Registration successful." 
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { status, message } = friendlyError(error);
+    res.status(status).json({ error: message });
   }
 };
 
@@ -165,7 +166,8 @@ exports.loginUser = async (req, res) => {
       res.status(401).json({ error: "Invalid handle or password" });
     }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { status, message } = friendlyError(error);
+    res.status(status).json({ error: message });
   }
 };
 
@@ -197,6 +199,7 @@ exports.deleteAccount = async (req, res) => {
       message: "Account permanently deleted. Farewell!" 
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { status, message } = friendlyError(error);
+    res.status(status).json({ error: message });
   }
 };
