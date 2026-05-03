@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   },
   meritScore: { 
     type: Number, 
-    default: 0 // 0-2 = Horrific Devil, 3-4 = Less Horrific, 5+ = Angel
+    default: 5 // Everyone starts as an Angel with 5 points
   },
   ageGroup: {
     type: String,

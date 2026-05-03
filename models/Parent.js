@@ -24,8 +24,7 @@ const ParentSchema = new mongoose.Schema({
   meritScore: { 
     type: Number, 
     default: 5, // Everyone starts as an Angel
-    min: 0, 
-    max: 5 
+    min: 0
   },
   inviteCodeUsed: { 
     type: String
