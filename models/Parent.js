@@ -12,6 +12,10 @@ const ParentSchema = new mongoose.Schema({
     required: true, 
     unique: true 
   },
+  role: {
+    type: String,
+    default: 'parent'
+  },
   passwordHash: { 
     type: String, 
     required: true 

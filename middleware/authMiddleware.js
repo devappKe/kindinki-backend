@@ -18,7 +18,7 @@ const protectRoute = async (req, res, next) => {
       let user = await User.findById(decoded.id).select('-passwordHash -recoveryKeyHash');
       
       if (!user) {
-        user = await Parent.findById(decoded.id).select('-password -recoveryKey');
+        user = await Parent.findById(decoded.id).select('-passwordHash -recoveryKeyHash');
       }
 
       if (!user) {
